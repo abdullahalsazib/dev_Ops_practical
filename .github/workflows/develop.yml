@@ -32,21 +32,6 @@ jobs:
           echo "Running Building Next.js"
           npm run build
 
-      # 6. Login to Docker Hub
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ secrets.DOCKER_USERNAME }}
-      #     password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # # 7. Build Docker image
-      # - name: Build Docker Image
-      #   run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nextjs-app:latest .
-
-      # # 8. Push Docker image
-      # - name: Push Docker Image
-      #   run: docker push ${{ secrets.DOCKER_USERNAME }}/nextjs-app:latest
-
   security-check:
     runs-on: ubuntu-latest
     steps:
@@ -72,3 +57,27 @@ jobs:
           sleep 5s;
           echo "Running developemnt checking.. 3"
           sleep 5s;
+
+  docker-hub-push:
+    name: Push on docker hub
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: push-docker-hub
+        run: |
+          echo "Running docker checking.. 1"
+          sleep 5s;
+        # 6. Login to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 7. Build Docker image
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nextjs-app:latest .
+
+      # 8. Push Docker image
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/nextjs-app:latest
